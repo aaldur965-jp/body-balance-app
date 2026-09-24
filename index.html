@@ -1,1 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ميزان الجسم - BodyBalance AI</title>
+    <style>
+        :root {
+            --bg-dark: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --neon-orange: #ff5722;
+            --neon-amber: #ffb300;
+            --text-light: #ffffff;
+            --text-gray: #a0a0a0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); padding-bottom: 70px; }
+        .header { background: linear-gradient(135deg, #1a1a1a, #000); padding: 20px; text-align: center; border-bottom: 2px solid var(--neon-orange); box-shadow: 0 0 15px rgba(255,87,34,0.3); }
+        .header h1 { font-size: 24px; color: var(--neon-orange); text-shadow: 0 0 10px rgba(255,87,34,0.5); }
+        .lang-switch { margin-top: 10px; background: transparent; color: var(--neon-amber); border: 1px solid var(--neon-amber); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .container { padding: 15px; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #2a2a2a; }
+        .card-title { color: var(--neon-amber); font-size: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        
+        /* Paywall Screen style */
+        .paywall-container { text-align: center; padding: 30px 15px; }
+        .paywall-icon { font-size: 50px; margin-bottom: 15px; color: var(--neon-orange); animation: pulse 2s infinite; }
+        .premium-btn { background: linear-gradient(90deg, var(--neon-orange), var(--neon-amber)); color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 25px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 0 15px rgba(255,87,34,0.5); }
+        
+        /* Macro Calculator Input Style */
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; margin-bottom: 5px; color: var(--text-gray); font-size: 14px; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; }
+        .calc-btn { background-color: var(--neon-orange); color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .result-box { margin-top: 15px; padding: 10px; background: #222; border-radius: 6px; border-left: 3px solid var(--neon-amber); display: none; }
+
+        /* Navigation Bar */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
+        .nav-item { color: var(--text-gray); border: none; background: transparent; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: var(--neon-orange); font-weight: bold; }
+        .nav-icon { font-size: 20px; margin-bottom: 3px; }
+
+        /* Fake Ads banner style */
+        .ad-banner { background: #151515; border: 1px dashed #333; text-align: center; padding: 8px; font-size: 11px; color: #555; margin-bottom: 15px; border-radius: 6px; }
+
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 id="app-title">ميزان الجسم</h1>
+        <button class="lang-switch" onclick="toggleLanguage()">English</button>
+    </div>
+
+    <div class="container">
+        <!-- 1️⃣ قسم حاسبة وقاموس الماكروز والبروتين -->
+        <div id="screen-macros" class="screen active">
+            <div class="ad-banner">Google AdMob: Banner Active (No Ads for Premium)</div>
+            <div class="card">
+                <div class="card-title" id="title-macro-calc">حاسبة الاحتياج اليومي</div>
+                <div class="input-group">
+                    <label id="lbl-weight">الوزن (كغم):</label>
+                    <input type="number" id="weight" placeholder="70">
+                </div>
+                <div class="input-group">
+                    <label id="lbl-goal">الهدف البدني:</label>
+                    <select id="goal">
+                        <option value="bulk" id="opt-bulk">تضخيم وبناء عضلات</option>
+                        <option value="cut" id="opt-cut">تنشيف وخسارة دهون</option>
+                    </select>
+                </div>
+                <button class="calc-btn" onclick="calculateMacros()" id="btn-calc">احسب الآن</button>
+                <div class="result-box" id="macro-results"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" id="title-food-dict">قاموس البروتين السريع (لكل 100 غرام)</div>
+                <ul style="list-style: none; padding: 5px; color: var(--text-gray);" id="food-list">
+                    <li>🍗 صدر دجاج: <b style="color:white">31 غرام بروتين</b></li>
+                    <li>🥩 لحم بقر صافي: <b style="color:white">26 غرام بروتين</b></li>
+                    <li>🥚 بيضة كاملة كبيرة: <b style="color:white">13 غرام بروتين</b></li>
+                    <li>🐟 علبة تونة بالماء: <b style="color:white">25 غرام بروتين</b></li>
+                    <li>🫘 عدس مطبوخ: <b style="color:white">9 غرام بروتين</b></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2️⃣ قسم موسوعة الهرمونات الـ 11 الموثقة -->
+        <div id="screen-hormones" class="screen">
+            <div class="ad-banner">Google AdMob: Banner Active (No Ads for Premium)</div>
+            <div class="card">
+                <div class="card-title">🧪 الدوبامين (Dopamine)</div>
+                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-dop">هرمون السعادة والتحفيز. طرق رفعه: إكمال المهام اليومية، ممارسة الرياضة، وتقليل السكريات الضارة.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">🧪 التستوستيرون (Testosterone)</div>
+                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-test">هرمون البناء والذكورة. طرق رفعه: تمارين الحديد المقاومة، النوم الكافي لمدة 8 ساعات، وتناول الزنك والدهون الصحية.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">🧪 الكورتيزول (Cortisol)</div>
+                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-cort">هرمون التوتر والإجهاد. طرق خفضه طبيعياً: تنظيم مواعيد النوم، تقليل الكافيين ليلاً، والمشي في الطبيعة.</p>
+            </div>
+            <div class="card">
+                <div class="card-title">🧪 الميلاتونين (Melatonin)</div>
+                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-mel">هرمون تنظيم النوم العميق. طرق رفعه: قطع الشاشات الزرقاء قبل النوم بساعة، والنوم في غرفة مظلمة تماماً.</p>
+            </div>
+        </div>
+
+        <!-- 3️⃣ قسم جدار الاشتراك الإجباري والذكاء الاصطناعي -->
+        <div id="screen-ai" class="screen">
+            <div class="card paywall-container">
+                <div class="paywall-icon">🔒</div>
+                <h3 style="color: var(--neon-amber); margin-bottom: 10px;" id="pw-title">مستشار الذكاء الاصطناعي الهرموني</h3>
+                <p style="color: var(--text-gray); font-size: 14px; line-height: 1.5;" id="pw-desc">هذه الميزة مغلقة للنسخة المجانية. اشترك هسة لتطلق مستشار الذكاء الاصطناعي لتحليل خمولك وتوترك، وبناء جدول مخصص، وإزالة جميع الإعلانات تماماً!</p>
+                <button class="premium-btn" onclick="simulateActivation()" id="pw-btn">اشترك الآن - $1.99 شهرياً (بدون إعلانات)</button>
+            </div>
+        </div>
+
+        <!-- 4️⃣ قسم سجل ومؤشر الحالة المزاجية اليومي -->
+        <div id="screen-logger" class="screen">
+            <div class="card">
+                <div class="card-title" id="title-logger">مؤشر التوازن والالتزام الأسبوعي</div>
+                <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 15px;" id="logger-desc">قم بتثبيت حالتك المزاجية لتراقب مدى التزامك الغذائي والهرموني:</p>
+                <div style="display:flex; justify-content: space-around; margin-bottom: 20px;">
+                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">🔥</button>
+                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">💪</button>
+                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">😴</button>
+                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">🥱</button>
+                </div>
+                <div style="height: 10px; background: #333; border-radius: 5px; overflow: hidden;">
+                    <div style="width: 75%; height: 100%; background: linear-gradient(90deg, var(--neon-orange), var(--neon-amber));"></div>
+                </div>
+                <p style="font-size:12px; color: var(--neon-orange); margin-top: 5px; text-align: center;" id="logger-status">نسبة استقرار الهرمونات والالتزام هالأسبوع: 75%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <div class="nav-bar">
+        <button class="nav-item active" onclick="switchScreen('macros', this)">
+            <span class="nav-icon">📊</span><span id="nav-lbl-macros">الماكروز</span>
+        </button>
+        <button class="nav-item" onclick="switchScreen('hormones', this)">
+            <span class="nav-icon">🧪</span><span id="nav-lbl-hormones">الهرمونات</span>
+        </button>
+        <button class="nav-item" onclick="switchScreen('ai', this)">
 
