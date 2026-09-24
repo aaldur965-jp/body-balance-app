@@ -2,149 +2,142 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ميزان الجسم - BodyBalance AI</title>
     <style>
         :root {
-            --bg-dark: #0d0d0d;
-            --card-bg: #1a1a1a;
-            --neon-orange: #ff5722;
-            --neon-amber: #ffb300;
-            --text-light: #ffffff;
-            --text-gray: #a0a0a0;
+            --bg: #09090b;
+            --card: #18181b;
+            --orange: #f97316;
+            --amber: #eab308;
+            --text: #fafafa;
+            --muted: #71717a;
+            --border: #27272a;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-light); padding-bottom: 70px; }
-        .header { background: linear-gradient(135deg, #1a1a1a, #000); padding: 20px; text-align: center; border-bottom: 2px solid var(--neon-orange); box-shadow: 0 0 15px rgba(255,87,34,0.3); }
-        .header h1 { font-size: 24px; color: var(--neon-orange); text-shadow: 0 0 10px rgba(255,87,34,0.5); }
-        .lang-switch { margin-top: 10px; background: transparent; color: var(--neon-amber); border: 1px solid var(--neon-amber); padding: 5px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-        .container { padding: 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; -webkit-user-select: none; user-select: none; }
+        
+        .header { background-color: var(--card); padding: 16px; text-align: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 18px; font-weight: 700; color: var(--orange); letter-spacing: -0.5px; }
+        .lang-btn { background: #27272a; color: var(--text); border: 1px solid var(--border); padding: 6px 14px; border-radius: 9999px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        
+        .container { padding: 16px; max-width: 480px; margin: 0 auto; }
         .screen { display: none; }
         .screen.active { display: block; }
-        .card { background-color: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #2a2a2a; }
-        .card-title { color: var(--neon-amber); font-size: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; }
         
-        /* Paywall Screen style */
-        .paywall-container { text-align: center; padding: 30px 15px; }
-        .paywall-icon { font-size: 50px; margin-bottom: 15px; color: var(--neon-orange); animation: pulse 2s infinite; }
-        .premium-btn { background: linear-gradient(90deg, var(--neon-orange), var(--neon-amber)); color: white; border: none; padding: 12px 25px; font-size: 18px; border-radius: 25px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; box-shadow: 0 0 15px rgba(255,87,34,0.5); }
+        .card { background-color: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .card-title { color: var(--amber); font-size: 15px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
         
-        /* Macro Calculator Input Style */
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; margin-bottom: 5px; color: var(--text-gray); font-size: 14px; }
-        .input-group input, .input-group select { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: white; border-radius: 6px; }
-        .calc-btn { background-color: var(--neon-orange); color: white; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .result-box { margin-top: 15px; padding: 10px; background: #222; border-radius: 6px; border-left: 3px solid var(--neon-amber); display: none; }
-
-        /* Navigation Bar */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #111; border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
-        .nav-item { color: var(--text-gray); border: none; background: transparent; font-size: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-        .nav-item.active { color: var(--neon-orange); font-weight: bold; }
-        .nav-icon { font-size: 20px; margin-bottom: 3px; }
-
-        /* Fake Ads banner style */
-        .ad-banner { background: #151515; border: 1px dashed #333; text-align: center; padding: 8px; font-size: 11px; color: #555; margin-bottom: 15px; border-radius: 6px; }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 12px; font-weight: 500; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 14px; background-color: #09090b; border: 1px solid var(--border); color: var(--text); border-radius: 10px; font-size: 14px; transition: border-color 0.2s; outline: none; }
+        .input-group input:focus { border-color: var(--orange); }
+        
+        .btn { width: 100%; padding: 14px; background-color: var(--orange); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn:active { opacity: 0.9; transform: scale(0.98); }
+        
+        .result-box { margin-top: 16px; padding: 14px; background-color: #09090b; border-radius: 10px; border-right: 4px solid var(--amber); display: none; font-size: 13px; line-height: 1.6; color: #e4e4e7; }
+        
+        .food-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .food-row:last-child { border-bottom: none; }
+        .food-p { color: var(--orange); font-weight: 600; }
+        
+        .lock-screen { text-align: center; padding: 32px 16px; }
+        .lock-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+        .lock-text { color: var(--muted); font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+        .premium-btn { background: linear-gradient(90deg, var(--orange), var(--amber)); color: white; border: none; }
+        
+        .mood-grid { display: flex; justify-content: space-around; margin: 20px 0; }
+        .mood-btn { font-size: 32px; background: none; border: none; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s; }
+        .mood-btn:active { background-color: #27272a; }
+        
+        .bar-bg { height: 10px; background-color: #27272a; border-radius: 9999px; overflow: hidden; margin-top: 16px; }
+        .bar-fill { width: 75%; height: 100%; background: linear-gradient(90deg, var(--orange), var(--amber)); }
+        
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
+        .nav-item { color: var(--muted); border: none; background: transparent; font-size: 10px; font-weight: 600; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 25%; }
+        .nav-item.active { color: var(--orange); }
+        .nav-icon { font-size: 18px; }
+        
+        .ad { background-color: #111; border: 1px dashed var(--border); text-align: center; padding: 8px; font-size: 11px; color: #52525b; margin-bottom: 16px; border-radius: 8px; font-weight: 500; }
+        
+        #ai-chat-area { display: none; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+        .chat-bubble { padding: 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+        .user-b { background-color: #27272a; color: var(--text); border-bottom-left-radius: 2px; text-align: right; }
+        .ai-b { background-color: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); color: var(--text); border-bottom-right-radius: 2px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1 id="app-title">ميزان الجسم</h1>
-        <button class="lang-switch" onclick="toggleLanguage()">English</button>
+        <h1 id="txt-logo">ميزان الجسم</h1>
+        <button class="lang-btn" onclick="switchLang()" id="btn-lang">English</button>
     </div>
 
     <div class="container">
-        <!-- 1️⃣ قسم حاسبة وقاموس الماكروز والبروتين -->
-        <div id="screen-macros" class="screen active">
-            <div class="ad-banner">Google AdMob: Banner Active (No Ads for Premium)</div>
+        <!-- 📊 شاشة الماكروز -->
+        <div id="scr-macros" class="screen active">
+            <div class="ad" id="ad-banner-1">Google AdMob: Banner Active (Free Version)</div>
             <div class="card">
-                <div class="card-title" id="title-macro-calc">حاسبة الاحتياج اليومي</div>
+                <div class="card-title" id="txt-calc-title">حاسبة الاحتياج اليومي للبروتين</div>
                 <div class="input-group">
-                    <label id="lbl-weight">الوزن (كغم):</label>
-                    <input type="number" id="weight" placeholder="70">
+                    <label id="txt-lbl-w">الوزن الحالي (كغم):</label>
+                    <input type="number" id="inp-w" value="70">
                 </div>
                 <div class="input-group">
-                    <label id="lbl-goal">الهدف البدني:</label>
-                    <select id="goal">
-                        <option value="bulk" id="opt-bulk">تضخيم وبناء عضلات</option>
-                        <option value="cut" id="opt-cut">تنشيف وخسارة دهون</option>
+                    <label id="txt-lbl-g">الهدف الرياضي:</label>
+                    <select id="inp-g">
+                        <option value="bulk" id="opt-b">تضخيم وزيادة كتلة عضلية</option>
+                        <option value="cut" id="opt-c">تنشيف وخسارة دهون جسم</option>
                     </select>
                 </div>
-                <button class="calc-btn" onclick="calculateMacros()" id="btn-calc">احسب الآن</button>
-                <div class="result-box" id="macro-results"></div>
+                <button class="btn" onclick="runCalc()" id="txt-btn-run">احسب احتياجك فوراً</button>
+                <div class="result-box" id="box-res"></div>
             </div>
 
             <div class="card">
-                <div class="card-title" id="title-food-dict">قاموس البروتين السريع (لكل 100 غرام)</div>
-                <ul style="list-style: none; padding: 5px; color: var(--text-gray);" id="food-list">
-                    <li>🍗 صدر دجاج: <b style="color:white">31 غرام بروتين</b></li>
-                    <li>🥩 لحم بقر صافي: <b style="color:white">26 غرام بروتين</b></li>
-                    <li>🥚 بيضة كاملة كبيرة: <b style="color:white">13 غرام بروتين</b></li>
-                    <li>🐟 علبة تونة بالماء: <b style="color:white">25 غرام بروتين</b></li>
-                    <li>🫘 عدس مطبوخ: <b style="color:white">9 غرام بروتين</b></li>
-                </ul>
+                <div class="card-title" id="txt-dict-title">قاموس الماكروز الشامل لـ 100 غرام</div>
+                <div class="food-row"><span class="food-n">🍗 صدر دجاج مشوي</span><span class="food-p">31 غرام بروتين</span></div>
+                <div class="food-row"><span class="food-n">🥩 لحم بقر صافي</span><span class="food-p">26 غرام بروتين</span></div>
+                <div class="food-row"><span class="food-n">🥚 بيضة كاملة كبيرة</span><span class="food-p">13 غرام بروتين</span></div>
+                <div class="food-row"><span class="food-n">🐟 علبة تونة بالماء</span><span class="food-p">25 غرام بروتين</span></div>
             </div>
         </div>
 
-        <!-- 2️⃣ قسم موسوعة الهرمونات الـ 11 الموثقة -->
-        <div id="screen-hormones" class="screen">
-            <div class="ad-banner">Google AdMob: Banner Active (No Ads for Premium)</div>
+        <!-- 🧪 شاشة الهرمونات -->
+        <div id="scr-hormones" class="screen">
+            <div class="ad" id="ad-banner-2">Google AdMob: Banner Active (Free Version)</div>
             <div class="card">
                 <div class="card-title">🧪 الدوبامين (Dopamine)</div>
-                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-dop">هرمون السعادة والتحفيز. طرق رفعه: إكمال المهام اليومية، ممارسة الرياضة، وتقليل السكريات الضارة.</p>
+                <p style="color: var(--muted); font-size: 13px; line-height: 1.6;" id="h-dop">هرمون السعادة والتحفيز والإنجاز. طرق الرفع الطبيعية: إكمال المهام بدفترك، الرياضة اليومية، وقطع السكريات والتشتت.</p>
             </div>
             <div class="card">
                 <div class="card-title">🧪 التستوستيرون (Testosterone)</div>
-                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-test">هرمون البناء والذكورة. طرق رفعه: تمارين الحديد المقاومة، النوم الكافي لمدة 8 ساعات، وتناول الزنك والدهون الصحية.</p>
+                <p style="color: var(--muted); font-size: 13px; line-height: 1.6;" id="h-test">هرمون البناء والطاقة والذكورة. طرق الرفع: تمارين المقاومة والحديد، النوم لـ 8 ساعات، الزنك، والدهون الصحية.</p>
             </div>
             <div class="card">
                 <div class="card-title">🧪 الكورتيزول (Cortisol)</div>
-                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-cort">هرمون التوتر والإجهاد. طرق خفضه طبيعياً: تنظيم مواعيد النوم، تقليل الكافيين ليلاً، والمشي في الطبيعة.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">🧪 الميلاتونين (Melatonin)</div>
-                <p style="color: var(--text-gray); font-size: 14px;" id="hormone-mel">هرمون تنظيم النوم العميق. طرق رفعه: قطع الشاشات الزرقاء قبل النوم بساعة، والنوم في غرفة مظلمة تماماً.</p>
+                <p style="color: var(--muted); font-size: 13px; line-height: 1.6;" id="h-cort">هرمون الإجهاد والتوتر والهدم. طرق الخفض: تنظيم النوم، تقليل الكافيين، المشي، وفصل تفكير القلق تماماً.</p>
             </div>
         </div>
 
-        <!-- 3️⃣ قسم جدار الاشتراك الإجباري والذكاء الاصطناعي -->
-        <div id="screen-ai" class="screen">
-            <div class="card paywall-container">
-                <div class="paywall-icon">🔒</div>
-                <h3 style="color: var(--neon-amber); margin-bottom: 10px;" id="pw-title">مستشار الذكاء الاصطناعي الهرموني</h3>
-                <p style="color: var(--text-gray); font-size: 14px; line-height: 1.5;" id="pw-desc">هذه الميزة مغلقة للنسخة المجانية. اشترك هسة لتطلق مستشار الذكاء الاصطناعي لتحليل خمولك وتوترك، وبناء جدول مخصص، وإزالة جميع الإعلانات تماماً!</p>
-                <button class="premium-btn" onclick="simulateActivation()" id="pw-btn">اشترك الآن - $1.99 شهرياً (بدون إعلانات)</button>
-            </div>
-        </div>
-
-        <!-- 4️⃣ قسم سجل ومؤشر الحالة المزاجية اليومي -->
-        <div id="screen-logger" class="screen">
-            <div class="card">
-                <div class="card-title" id="title-logger">مؤشر التوازن والالتزام الأسبوعي</div>
-                <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 15px;" id="logger-desc">قم بتثبيت حالتك المزاجية لتراقب مدى التزامك الغذائي والهرموني:</p>
-                <div style="display:flex; justify-content: space-around; margin-bottom: 20px;">
-                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">🔥</button>
-                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">💪</button>
-                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">😴</button>
-                    <button style="font-size:24px; background:none; border:none; cursor:pointer;">🥱</button>
+        <!-- 🧠 شاشة مستشار AI المفتوحة تلقائياً كمعاينة صافية -->
+        <div id="scr-ai" class="screen">
+            <div class="card" id="paywall-view">
+                <div class="lock-screen">
+                    <span class="lock-icon">🔒</span>
+                    <h3 style="color:var(--amber); margin-bottom:8px;" id="txt-pw-t">مستشار الذكاء الاصطناعي الهرموني</h3>
+                    <p class="lock-text" id="txt-pw-d">هذه الميزة مغلقة للنسخة المجانية. اشترك الآن بـ 1.99$ شهرياً لتفتح مستشار الذكاء الاصطناعي لتحليل خمولك وتوترك، وبناء جدول مخصص، وإزالة جميع الإعلانات تماماً!</p>
+                    <button class="btn premium-btn" onclick="unlockAI()" id="txt-pw-b">اشترك الآن - $1.99 شهرياً (بدون إعلانات)</button>
                 </div>
-                <div style="height: 10px; background: #333; border-radius: 5px; overflow: hidden;">
-                    <div style="width: 75%; height: 100%; background: linear-gradient(90deg, var(--neon-orange), var(--neon-amber));"></div>
-                </div>
-                <p style="font-size:12px; color: var(--neon-orange); margin-top: 5px; text-align: center;" id="logger-status">نسبة استقرار الهرمونات والالتزام هالأسبوع: 75%</p>
+            </div>
+            <div class="card" id="ai-chat-area">
+                <div class="chat-bubble user-b" id="c-u">أشعر بخمول شديد وتوتر بعد الأكل والدراسة.</div>
+                <div class="chat-bubble ai-b" id="c-a">🤖 تحليل ميزان الجسم: هالمؤشرات تدل على ارتفاع الكورتيزول وهبوط الدوبامين. الحل الفوري: تناول وجبة بروتين صافية هسة، اقطع الكافيين، وامشِ 10 دقائق لتعديل توازن الجسم والتركيز.</div>
             </div>
         </div>
-    </div>
 
-    <!-- شريط التنقل السفلي -->
-    <div class="nav-bar">
-        <button class="nav-item active" onclick="switchScreen('macros', this)">
-            <span class="nav-icon">📊</span><span id="nav-lbl-macros">الماكروز</span>
-        </button>
-        <button class="nav-item" onclick="switchScreen('hormones', this)">
-            <span class="nav-icon">🧪</span><span id="nav-lbl-hormones">الهرمونات</span>
-        </button>
-        <button class="nav-item" onclick="switchScreen('ai', this)">
-
+        <!-- 📈 شاشة السجل -->
+        <div id="scr-logger" class="screen">
+            <div class="card">
+                <div class="card-title" id="txt-log-t">مؤشر التوازن والالتزام الأسبوعي</div>
